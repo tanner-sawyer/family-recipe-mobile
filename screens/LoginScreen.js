@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import  * as Expo from 'expo';
+import SessionService from '../services/session';
 
 import { 
   StyleSheet, 
@@ -44,7 +45,7 @@ export default class LoginScreen extends Component {
   constructor(props){
     super(props)
     this.state = {
-      username : '',
+      email : '',
       password : '',
       showTouchId : false,
       compatible : false,
@@ -102,8 +103,8 @@ export default class LoginScreen extends Component {
     }
   }
 
-  handleUserNameChange = (text) => {
-    this.setState({ username : text })
+  handleEmailChange = (text) => {
+    this.setState({ email : text })
   }
 
   handlePasswordChange = (text) => {
@@ -111,7 +112,7 @@ export default class LoginScreen extends Component {
   }
 
   handleSubmit = () => {
-    console.log(this.state.username)
+    console.log(this.state.email)
     console.log(this.state.password)
     this._signInAsync()
   }
@@ -126,8 +127,14 @@ export default class LoginScreen extends Component {
   }
 
   _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc');
-    this.props.navigation.navigate('App');
+    let result = await SessionService.login(this.state.email, this.state.password)
+    if(result.token){
+      await AsyncStorage.setItem('userToken', result.token);
+      this.props.navigation.navigate('App');
+    }
+    else{
+      console.log(result)
+    }
   };
 
   render() {
@@ -163,10 +170,10 @@ export default class LoginScreen extends Component {
 
             <LoginTextInput 
               style={Styles.textInput} 
-              placeholder='Username' 
-              onChangeText={this.handleUserNameChange}
-              value={this.state.username}
-              textContentType='username'
+              placeholder='Email' 
+              onChangeText={this.handleEmailChange}
+              value={this.state.email}
+              textContentType='emailAddress'
               autoCorrect={false}
             />
             <LoginTextInput 
