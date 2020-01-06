@@ -52,7 +52,8 @@ export default class LoginScreen extends Component {
       failedAuthentication : false,
       authenticated : false,
       attempts : 0,
-      locked : false
+      locked : false,
+      showSignup : false
     }
   }
 
@@ -112,8 +113,6 @@ export default class LoginScreen extends Component {
   }
 
   handleSubmit = () => {
-    console.log(this.state.email)
-    console.log(this.state.password)
     this._signInAsync()
   }
 
@@ -128,6 +127,7 @@ export default class LoginScreen extends Component {
 
   _signInAsync = async () => {
     let result = await SessionService.login(this.state.email, this.state.password)
+    console.log('result : ', result)
     if(result.token){
       await AsyncStorage.setItem('userToken', result.token);
       this.props.navigation.navigate('App');
@@ -136,6 +136,10 @@ export default class LoginScreen extends Component {
       console.log(result)
     }
   };
+
+  handleShowSignup = () => {
+    this.setState({ showSignup : true })
+  }
 
   render() {
 
@@ -192,6 +196,12 @@ export default class LoginScreen extends Component {
               <Text style={Styles.buttonText}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity 
+              onPress={this.handleShowSignup}
+              style={Styles.signup}
+            >
+              <Text style={Styles.signupText}>Sign Up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
               onPress={this.handleForgotPassword}
               style={Styles.forgotPassword}
             >
@@ -219,7 +229,7 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
   },
   container : {
-    height: 450,
+    height: 460,
     width: '80%', 
     backgroundColor: '#ffffff',
     borderRadius: 6,
@@ -264,8 +274,19 @@ const Styles = StyleSheet.create({
   buttonText : {
     color : '#396379',    
   },
-  forgotPassword: {
+  signup: {
     marginTop: 10,
+    width: 180,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  signupText: {
+    color: '#9a0606',
+    fontFamily: 'thasadith',
+    fontSize: 12,
+  },
+  forgotPassword: {
+    marginTop: 5,
     width: 180,
     alignItems: 'center',
     justifyContent: 'center',
